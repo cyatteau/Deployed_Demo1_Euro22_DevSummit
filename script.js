@@ -37,8 +37,14 @@ function showMap() {
     ],
   }).addTo(map);
 
+  const results = L.layerGroup().addTo(map);
   searchControl.on("results", (data) => {
-    map.setView(data.latlng, 14);
+    results.clearLayers();
+    for (let i = data.results.length - 1; i >= 0; i--) {
+      const lat = data.results[i].latlng.lat;
+      const long = data.results[i].latlng.lng;
+      map.setView(new L.LatLng(lat, long), 14);
+    }
     showPlaces();
   });
 
@@ -50,27 +56,19 @@ function showMap() {
       apikey: apiKey,
     })
       .category("Post Office")
-      .nearby(map.getCenter(), 10)
-
+      .nearby(map.getCenter(), 1)
       .run(function(error, response) {
-        if (error) {
-          return;
-        }
-        layerGroup.clearLayers();
-        response.results.forEach((searchResult) => {
-          position = new L.LatLng(
-            searchResult.latlng.lat,
-            searchResult.latlng.lng
-          );
-          L.marker(searchResult.latlng)
-            .addTo(layerGroup)
-            .bindPopup(
-              `<b>${searchResult.properties.PlaceName}</b></br>${searchResult.properties.Place_addr}<br/>${searchResult.properties.Phone}<br/>${searchResult.properties.URL}`
+        for (const result of response.results) {
+          position = new L.LatLng(result.latlng.lat, result.latlng.lng);
+          new L.marker(result.latlng).addTo(layerGroup).bindTooltip(() => {
+            return L.Util.template(
+              `<b>${result.properties.PlaceName}</b></br>${result.properties.Place_addr}<br/>${result.properties.Phone}<br/>${result.properties.URL}`
             );
-        });
+          });
+        }
       });
     map.setView(position, 14);
   }
-
   showPlaces();
 }
+
