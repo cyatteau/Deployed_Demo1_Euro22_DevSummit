@@ -45,6 +45,7 @@ function showMap() {
   const layerGroup = L.layerGroup().addTo(map);
 
   function showPlaces() {
+    let position;
     L.esri.Geocoding.geocode({
       apikey: apiKey,
     })
@@ -57,6 +58,10 @@ function showMap() {
         }
         layerGroup.clearLayers();
         response.results.forEach((searchResult) => {
+          position = new L.LatLng(
+            searchResult.latlng.lat,
+            searchResult.latlng.lng
+          );
           L.marker(searchResult.latlng)
             .addTo(layerGroup)
             .bindPopup(
@@ -64,6 +69,7 @@ function showMap() {
             );
         });
       });
+    map.setView(position, 14);
   }
 
   showPlaces();
