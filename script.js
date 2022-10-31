@@ -1,4 +1,3 @@
-
 let apiKey = "";
 
 async function getInfo() {
@@ -61,7 +60,7 @@ function showMap() {
           L.marker(searchResult.latlng)
             .addTo(layerGroup)
             .bindPopup(
-              `<b>${searchResult.properties.PlaceName}</b></br>${searchResult.properties.Place_addr}`
+              `<b>${searchResult.properties.PlaceName}</b></br>${searchResult.properties.Place_addr}<br/>${searchResult.properties.Phone}<br/>${searchResult.properties.URL}`
             );
         });
       });
